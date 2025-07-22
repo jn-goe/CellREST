@@ -1,6 +1,26 @@
+# ignore data and development folders
+/Data/
+/Code/
+/dev/
+
+/archive/
+archive.zip
+
+# README compilation files
+README.Rmd
+README.log
+README.html
+README.pdf
+/README_files/figure-gfm/*.pdf
+
 # History files
 .Rhistory
 .Rapp.history
+.DS_Store
+.RProj
+/.RProj
+/*.RProj/
+/*.RProj
 
 # Session Data files
 .RData
@@ -22,6 +42,7 @@
 .Rproj.user/
 
 # produced vignettes
+/vignettes/
 vignettes/*.html
 vignettes/*.pdf
 
@@ -47,3 +68,4 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+.Rproj.user
