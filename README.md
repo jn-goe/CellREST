@@ -31,12 +31,6 @@ GitHub via R package
 remotes::install_github("jn-goe/CellREST", dependencies = T)
 ```
 
-The source package can be installed via
-
-``` r
-install.packages("CellREST_0.0.1.tar.gz", repos = NULL, type="source")
-```
-
 CellREST depends on R Packages `ggplot2, ggtree, igraph, Seurat` and
 imports
 `pheatmap, ape, castor, dplyr, ggimage, magrittr, Rogue, scales, seqinr, treespace, uwot, viridis,pals`,
@@ -59,12 +53,11 @@ For Maximum Likelihood tree reconstruction, IQ-TREE can be installed
 locally or called via web servers following instructions on the [IQ-TREE
 website](https://iqtree.github.io/). We provide the bash script
 `run_iqtree.sh` to enable parallel tree reconstructions using multiple
-threads. To do so, adapt parameters therein to match your alignment file
-name and output directory. In all our analyses, we used IQ-TREE version
+threads (see example of use below). In all our analyses, we used IQ-TREE version
 2 and hence called IQ-TREE via the `iqtree2` command. If you use another
-version, please adapt the command in `run_iqtree.sh`, accordingly. For
+version or command, please adapt it in `run_iqtree.sh`, accordingly. For
 the below outlined exemplary workflow, IQ-TREE output files are readily
-provided.
+provided in the directory `toy_data`.
 
 #### Requirements
 
@@ -149,9 +142,11 @@ seurat_to_fasta(obj,
 The FASTA file can now be input to IQ-TREE ([Minh et al.
 2020](#ref-minh2020)) to reconstruct multiple single-cell-labeled
 Maximum Likelihood trees (scML-trees). For consistency, we suggest to
-fix the model via `-m GTR+F+G4`.
-
-    module load iqtree2
+fix the model via `-m GTR+F+G4`. For a parallized IQ-TREE call across 
+multiple seeds, the following outlines an examplary use of the provided 
+`run_iqtree.sh` bash script. Please adjust directories `OUTPUT_DIR` and `FASTA_FILE` 
+as well as variables `MAX_PARALLEL_JOBS` and `N_CORES` according to your available computing capacities.
+    
     source run_iqtree.sh
     export -f run_iqtree
 
@@ -162,8 +157,9 @@ fix the model via `-m GTR+F+G4`.
     SEEDS=$(seq 1 $N_REPLICATES)               # seeds for tree inferences
 
     MAX_PARALLEL_JOBS=$(($(nproc) - 10))       # maximal number of parallel jobs
+    N_CORES=1                                  # number of cores per job
+
     MODEL="GTR+F+G4"                           # phylogenetic model
-    N_CORES=1                                  # per seed
     FAST_STR="true"                            # fast tree inference
     PERS_VAL=0.1                               # pertubation strength
     LOG_FILE="$OUTPUT_DIR/iqtree_parallel.log" # combined LOG file directory
@@ -171,10 +167,10 @@ fix the model via `-m GTR+F+G4`.
     printf "%s\n" "${SEEDS[@]}" | xargs -n 1 -P "$MAX_PARALLEL_JOBS" bash -c 'run_iqtree "$@"'
     _ "$OUTPUT_DIR" "$FASTA_FILE" "$MODEL" "$N_CORES" "$FAST_STR" "$PERS_VAL" "$LOG_FILE"
 
-A slower option is to simply specify the number of trees in the IQ-TREE
+Another, slower option is to specify the number of successive tree reconstructions in the IQ-TREE
 command via `--runs 100`. In this case, only one seed can be chosen and
-reproducibility is only ensured if a fixed number of cores `N_CORES` is
-called:
+reproducibility is only ensured if a number of cores `N_CORES` is
+fixed:
 
     iqtree2 -s FASTA_FILE -m GTR+F+G4 -nt N_CORES -seed SEED -fast --runs 100
 
@@ -248,7 +244,7 @@ tree_plots <- plot_tree_UMAP(obj = obj,
     #> [1] "patristic_correlation finished."
 
 Finally, trees can be combined into a single-cell network (sc-network)
-by transforming trees into nearest-neighbor-tree-graphs (nn-tree-graphs)
+by transforming trees into nearest neighbor tree-graphs (nn-tree-graphs)
 and computing their union.
 
 ``` r
@@ -274,8 +270,8 @@ network_all
 ```
 
 For visualization of the network, we can either use already present
-dimensionality reductions (see parameter `umap_key`). Here we proceed
-with using CellREST distances to compute a sc-network informed UMAP:
+dimensionality reductions (see parameter `umap_key`). Here, however, we use
+CellREST distances to compute a sc-network informed UMAP:
 
 ``` r
 obj <- embed_network(obj = obj,
@@ -293,7 +289,7 @@ plot_network(obj = obj,
 
 <img src="README_files/figure-gfm/graphvis_graphlayout-1.png" width="50%" />
 
-In this visualization we can observe edges with longer lengths. For a
+In this visualization we can observe network edges with longer lengths. For a
 more detailed analysis, we visualize the distribution of logarithmized
 edge lengths and edge weights. For the former, we can fit a normal
 distribution to determine a threshold to detect potential outliers:
@@ -355,7 +351,7 @@ removing the outlier edges had no effect on the CellREST distances.
 
 We can also use other edge attributes to compute a shortest path
 distance, e.g., the minimal number of branches connecting two cells.
-This distance can be input to the UMAP embedding as following:
+This distance can be used for a UMAP embedding as following:
 
 ``` r
 obj <- embed_network(obj = obj,
