@@ -9,7 +9,7 @@
 ## Overview
 
 This repository includes the R package `CellREST` (**Cell**ular
-**R**elationships in **E**xpression-state- based *S*ingle-cell
+**R**elationships in **E**xpression-state- based **S**ingle-cell
 **T**rees) as introduced in 
 
 Julia Naas, Arndt von Haeseler, Christiane Elgert. "*Rethinking scRNA-seq Trajectories in Phylogenetic Paradigms: Overcoming Challenges of Missing Ancestral Information*“ bioRxiv 2025.07.22.664676; [https://doi.org/10.1101/2025.07.22.664676](https://doi.org/10.1101/2025.07.22.664676).
