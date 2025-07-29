@@ -10,9 +10,9 @@
 
 This repository includes the R package `CellREST` (**Cell**ular
 **R**elationships in **E**xpression-state- based *S*ingle-cell
-**T**rees) as introduced in “*Rethinking scRNA-seq trajectories in
-phylogenetic paradigms: Overcoming challenges of missing ancestral
-information*”.
+**T**rees) as introduced in 
+
+Julia Naas, Arndt von Haeseler, Christiane Elgert. "*Rethinking scRNA-seq Trajectories in Phylogenetic Paradigms: Overcoming Challenges of Missing Ancestral Information*“ bioRxiv 2025.07.22.664676; [https://doi.org/10.1101/2025.07.22.664676](https://doi.org/10.1101/2025.07.22.664676).
 
 It is compatible with a typical `Seurat` ([Hao et al.
 2024](#ref-hao2024)) workflow to analyse single-cell RNA-sequencing
@@ -46,14 +46,15 @@ For the below described CellREST workflow, we apply Adaptively
 Thresholded Low-Rank Approximation (ALRA) ([Linderman et al.
 2022](#ref-linderman2022)) imputation to the scRNA-seq data. ALRA is
 implemented in the R Package `SeuratWrappers` and can be installed
-following installation guidelines in the respective [GitHub
+following installation guidelines in the respective [SeuratWrappers GitHub
 Repository](https://github.com/satijalab/seurat-wrappers).
 
-For Maximum Likelihood tree reconstruction, IQ-TREE can be installed
+For Maximum Likelihood tree reconstruction, IQ-TREE ([Minh et al.
+2020](#ref-minh2020)) can be installed
 locally or called via web servers following instructions on the [IQ-TREE
 website](https://iqtree.github.io/). We provide the bash script
-`run_iqtree.sh` to enable parallel tree reconstructions using multiple
-threads (see example of use below). In all our analyses, we used IQ-TREE version
+`run_iqtree.sh` that wraps the IQ-TREE call in a function `run_iqtree` and enables parallel tree reconstructions using multiple
+threads e.g. via `xargs` (see example of use below). In all our analyses, we used IQ-TREE version
 2 and hence called IQ-TREE via the `iqtree2` command. If you use another
 version or command, please adapt it in `run_iqtree.sh`, accordingly. For
 the below outlined exemplary workflow, IQ-TREE output files are readily
@@ -78,9 +79,7 @@ CellREST please raise a repository
 
 Here we show the workflow of CellREST on a simulated scRNA-seq dataset,
 in which cells are simulated to follow a simply cycle topology (via
-`dyngen` ([Cannoodt et al. 2021](#ref-cannoodt2021)), see
-[dynverse](https://dyngen.dynverse.org/index.html) for more details on
-the simulation procedure). To simulate missing transient states, we
+[`dyngen`](https://dyngen.dynverse.org/index.html) ([Cannoodt et al. 2021](#ref-cannoodt2021))). To simulate missing transient states, we
 deleted cells in two disjunct simulation time intervals. First we
 perform a typical downstream analysis, based on the R package `Seurat`:
 
@@ -139,12 +138,12 @@ seurat_to_fasta(obj,
                 dir = data_dir)
 ```
 
-The FASTA file can now be input to IQ-TREE ([Minh et al.
-2020](#ref-minh2020)) to reconstruct multiple single-cell-labeled
+The FASTA file can now be input to IQ-TREE to reconstruct multiple single-cell-labeled
 Maximum Likelihood trees (scML-trees). For consistency, we suggest to
 fix the model via `-m GTR+F+G4`. For a parallized IQ-TREE call across 
 multiple seeds, the following outlines an examplary use of the provided 
-`run_iqtree.sh` bash script. Please adjust directories `OUTPUT_DIR` and `FASTA_FILE` 
+`run_iqtree.sh` bash script that wraps the IQ-TREE call in a function `run_iqtree` and enables parallel tree reconstructions using multiple
+threads via `xargs` . Please adjust directories `OUTPUT_DIR` and `FASTA_FILE` 
 as well as variables `MAX_PARALLEL_JOBS` and `N_CORES` according to your available computing capacities.
     
     source run_iqtree.sh
